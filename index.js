@@ -31,29 +31,57 @@ async function run() {
 
         const toysCollection = client.db('toysDB').collection('toys');
 
+
         app.get('/toys', async (req, res) => {
             const cursor = toysCollection.find();
             const result = await cursor.toArray();
             res.send(result)
         })
 
-        app.get('/toysById/:id', async(req, res) => {
+        app.get('/toysById/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await toysCollection.findOne(query)
             res.send(result);
         });
 
-        app.get('/toysByEmail/:email', async(req, res) => {
+        app.get('/toysByEmail/:email', async (req, res) => {
             const email = req.params.email;
-            const query = {email: email};
+            const query = { email: email };
             const cursor = toysCollection.find(query);
             const result = await cursor.toArray();
             res.send(result)
 
         })
 
-        app.put('/toysById/:id', async(req, res) => {
+
+
+        // app.get('toysSortByPrice/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     const query = { email: email };
+        //     const price = req.body;
+        //     let priceObj = {};
+        //     priceObj = price
+        //     const cursor = toysCollection.find(query).sort({ priceObj: 1 });
+        //     const result = await cursor.toArray();
+        //     res.send(result)
+        // })
+
+        const indexKeys = { name: 1, category: 1 };
+        const indexOptions = { name: "toyName" };
+        const result = await toysCollection.createIndex(indexKeys, indexOptions);
+
+        app.get('/toysBySearch/:searchText', async (req, res) => {
+            const searchText = req.params.searchText;
+            const result = await toysCollection.find({
+                $or: [
+                    { name: { $regex: searchText, $options: "i" } },
+                    { category: { $regex: searchText, $options: "i" } },],
+            }).toArray();
+            res.send(result);
+        })
+
+        app.put('/toysById/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const options = { upsert: true };
@@ -74,15 +102,15 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/toys/:category', async(req, res) => {
+        app.get('/toys/:category', async (req, res) => {
             const category = req.params.category;
-            const query = {category: category}
+            const query = { category: category }
             const cursor = toysCollection.find(query);
             const result = await cursor.toArray();
             res.send(result)
         });
 
-      
+
         app.post('/toys', async (req, res) => {
             const newToys = req.body;
             const result = await toysCollection.insertOne(newToys);
