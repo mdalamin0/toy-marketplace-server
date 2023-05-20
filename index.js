@@ -54,19 +54,6 @@ async function run() {
 
         })
 
-
-
-        // app.get('toysSortByPrice/:email', async (req, res) => {
-        //     const email = req.params.email;
-        //     const query = { email: email };
-        //     const price = req.body;
-        //     let priceObj = {};
-        //     priceObj = price
-        //     const cursor = toysCollection.find(query).sort({ priceObj: 1 });
-        //     const result = await cursor.toArray();
-        //     res.send(result)
-        // })
-
         const indexKeys = { name: 1, category: 1 };
         const indexOptions = { name: "toyName" };
         const result = await toysCollection.createIndex(indexKeys, indexOptions);
