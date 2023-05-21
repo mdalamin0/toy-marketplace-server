@@ -33,7 +33,7 @@ async function run() {
 
 
         app.get('/toys', async (req, res) => {
-            const cursor = toysCollection.find();
+            const cursor = toysCollection.find().limit(20);
             const result = await cursor.toArray();
             res.send(result)
         })
@@ -54,9 +54,6 @@ async function run() {
 
         })
 
-        const indexKeys = { name: 1, category: 1 };
-        const indexOptions = { name: "toyName" };
-        const result = await toysCollection.createIndex(indexKeys, indexOptions);
 
         app.get('/toysBySearch/:searchText', async (req, res) => {
             const searchText = req.params.searchText;
